@@ -4,7 +4,7 @@ Reaper libsndfile wrapper plug-in
 > Reaper plug-in that adds import (soundfile reading) capabilites to the Digital Audio Workstation Reaper (www.reaper.fm)
 > libsndfile supports a broad variety of soundfile formats, this plugin allows to use libsndfile to import audio files into Reaper projects.
 
-Adds support to load soundfiles such as RF64 (eg. used by RME Digicheck, mh acoustic Eigenstudio), .paf, .sf, .raw, ...
+Adds support to load soundfiles such as RF64 (eg. used by RME Digicheck, mh acoustics Eigenstudio(R)), .paf, .sf, .raw, ...
 
 *reaper_libsndfilewrapper* is originally written by Xenakios 
 http://xenakios.wordpress.com
