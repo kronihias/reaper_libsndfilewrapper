@@ -38,7 +38,7 @@ PCM_source *CreateFromFile(const char *filename, int priority)
     if (priority > 6 && lfn>4)
     {
         PCM_source *w=PCM_Source_CreateFromSimple(new LSFW_SimpleMediaDecoder,filename);
-        if (w->IsAvailable() || priority >= 7) return w;
+        if (w->IsAvailable() && priority >= 6) return w;
             delete w;
     }
 
