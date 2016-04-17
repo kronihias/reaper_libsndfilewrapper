@@ -1,5 +1,6 @@
 #ifdef _WIN32
 #include <windows.h>
+#include<Commctrl.h>
 #else
 #include "swell/swell.h"
 // #include "swell/swell-dlggen.h"
