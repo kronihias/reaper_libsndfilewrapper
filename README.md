@@ -1,17 +1,19 @@
 Reaper libsndfile wrapper plug-in
 ==========
 
-> Reaper plug-in that adds import (soundfile reading) capabilites to the Digital Audio Workstation Reaper (www.reaper.fm)
-> libsndfile supports a broad variety of soundfile formats, this plugin allows to use libsndfile to import audio files into Reaper projects.
+> Reaper plug-in that adds import (soundfile reading) and export (soundfile writing) capabilites to the Digital Audio Workstation Reaper (www.reaper.fm)
+> libsndfile supports a broad variety of soundfile formats, this plugin allows to use libsndfile to import audio files into Reaper projects and export projects.
 
-Adds support to load soundfiles such as RF64 (eg. used by RME Digicheck, mh acoustics Eigenstudio(R)), .paf, .sf, .raw, ...
+Adds support to read/write soundfiles such as RF64 (eg. used by RME Digicheck, mh acoustics Eigenstudio(R)), .paf, .sf, .raw, .mat, ...
+
+Complete list of additionally supported file extensions: .au, .avr, .caf, .htk, .iff, .mat, .mpc, .oga, .paf, .pvf, .raw, .rf64, .sd2, .sds, .sf, .voc, .w64, .wve, .xi
 
 *reaper_libsndfilewrapper* is originally written by Xenakios 
 http://xenakios.wordpress.com
 https://code.google.com/p/reaperlibsndfilewrapper/
 
 
-bugfixes and MacOS/Windows builds by Matthias Kronlachner
+bugfixes, export functionallity and MacOS/Windows builds by Matthias Kronlachner
 
 > This software is licensed under the GNU LESSER GENERAL PUBLIC LICENSE (LGPL) license.
 It uses libsndfile by Erik de Castro Lopo which is licensed under LGPL 
@@ -34,7 +36,7 @@ building yourself
 authors
 -----------
 2012 Xenakios
-2014 Matthias Kronlachner
+2014-2016 Matthias Kronlachner
 
 Contact:
 m.kronlachner (ät) gmail.com
