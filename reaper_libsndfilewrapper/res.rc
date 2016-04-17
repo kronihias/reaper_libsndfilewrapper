@@ -1,0 +1,134 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_WAVEITEMINFO DIALOG 0, 0, 222, 173
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MP3 File Properties"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Filename:",IDC_STATIC,7,9,38,8
+    EDITTEXT        IDC_NAME,7,21,208,12,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "File info:",IDC_STATIC,7,38,27,8
+    EDITTEXT        IDC_INFO,7,48,208,88,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY
+    DEFPUSHBUTTON   "Close",IDOK,85,152,50,14
+    CONTROL         "Correct compressor latency/length (recommended)",IDC_CHECK1,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,138,175,10
+END
+
+IDD_LIBSNDFILESINK_CFG DIALOGEX 0, 0, 288, 51
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    COMBOBOX        IDC_ENCODING,41,19,109,98,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FORMAT,41,3,109,98,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_BYTEORDER,41,34,109,90,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Format:",IDC_FORMAT_TEXT,0,5,24,8
+    LTEXT           "Encoding:",IDC_ENCODING_TEXT,0,21,32,8
+    LTEXT           "Byte Order:",IDC_BYTEORDER_TEXT,0,36,39,8
+    LTEXT           "VBR/Flac Quality (0.0-1.0):",IDC_VBR_LABEL,168,26,88,8
+    CONTROL         "",IDC_VBR_SLIDER,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,162,34,121,15
+    LTEXT           "Static",IDC_VBR_VAL,259,27,19,8
+END
+
+IDD_GET_LAME DIALOG 0, 0, 269, 109
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "MP3 Encoder Missing"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    PUSHBUTTON      "Download lame_enc.dll",IDC_LAME_LINK,83,82,96,13,BS_FLAT
+    LTEXT           "Explanation of why we don't include MP3 encoder",IDC_LAME_MSG,7,6,256,66
+    DEFPUSHBUTTON   "OK",IDOK,215,89,50,14
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_WAVEITEMINFO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 215
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 166
+    END
+
+    IDD_LIBSNDFILESINK_CFG, DIALOG
+    BEGIN
+    END
+
+    IDD_GET_LAME, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 103
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

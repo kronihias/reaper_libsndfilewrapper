@@ -14,6 +14,10 @@ void (*format_timestr)(double tpos, char *buf, int buflen);
 void (*update_disk_counters)(int read, int write);
 void (*ShowConsoleMsg)(const char* msg);
 
+REAPER_PeakBuild_Interface *(*PeakBuild_Create)(PCM_source *src, const char *fn, int srate, int nch);
+void (*GetPreferredDiskWriteMode)(int *mode, int nb[2], int *bs);
+const char *(*get_ini_file)();
+
 // output diagnostics messages using Reaper's currently available console
 #define REAPER_DEBUG_OUTPUT_TRACING
 
@@ -92,6 +96,7 @@ const char *EnumFileExtensions(int i, char **descptr) // call increasing i until
 
 
 pcmsrc_register_t myRegStruct={CreateFromType,CreateFromFile,EnumFileExtensions};
+extern pcmsink_register_t mySinkRegStruct; // from pcmsink_libsndfile.cpp
 
 const char *(*GetExePath)();
 
@@ -114,6 +119,9 @@ REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(REAPER_PLUGIN_HINSTANCE hI
         IMPAPI(format_timestr);
         IMPAPI(update_disk_counters);
         IMPAPI(ShowConsoleMsg);
+        IMPAPI(get_ini_file);
+        IMPAPI(GetPreferredDiskWriteMode);
+        IMPAPI(PeakBuild_Create);
         if (impapierrcnt)
         {
             ShowConsoleMsg("Errors importing Reaper API functions, aborting loading Xenakios Libsndfile wrapper");
@@ -130,6 +138,7 @@ REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(REAPER_PLUGIN_HINSTANCE hI
             return 0;
         }
         rec->Register("pcmsrc",&myRegStruct);
+        rec->Register("pcmsink",&mySinkRegStruct);
         return 1;
     }
     return 0;

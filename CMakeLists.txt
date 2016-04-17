@@ -19,10 +19,58 @@ IF(APPLE)
 	
 	FIND_LIBRARY(CARBON_LIBRARY Carbon)
 	FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+	
+	SET(CMAKE_MACOSX_RPATH 1)
 ENDIF (APPLE)
 
+# THESE ARE THE MAIN SOURCE FILES
+set (reaper_libsndfilewrapper_sources
+	${CMAKE_CURRENT_SOURCE_DIR}/reaper_libsndfilewrapper/libsndfileimport.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/reaper_libsndfilewrapper/main.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/reaper_libsndfilewrapper/wrapperclass.cpp	
+	${CMAKE_CURRENT_SOURCE_DIR}/reaper_libsndfilewrapper/pcmsink_libsndfile.cpp
+	)
+
+
+IF(WIN32)
+	
+	set (win_resource_files
+		${CMAKE_CURRENT_SOURCE_DIR}/reaper_libsndfilewrapper/res.rc
+		)
+	
+	set(all_source_files ${reaper_libsndfilewrapper_sources} ${win_resource_files})
+		
+ENDIF(WIN32)
+
+IF(NOT WIN32)
+	
+#	FILE ( GLOB swell_sources ${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/*.mm )
+	
+#	FILE ( GLOB swell_sources2 ${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/*.cpp )
+	
+#	list(REMOVE_ITEM swell_sources2 "${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell-dlg-generic.cpp")
+#	list(REMOVE_ITEM swell_sources2 "${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell-gdi-generic.cpp")
+	
+	# this filelist is from the swell example: (app_main.cpp)
+	set (swell_sources
+		${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell-dlg.mm
+		${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell-gdi.mm
+		${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell-ini.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell-kb.mm 
+		${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell-menu.mm 
+		${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell-misc.mm 
+		${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell-miscdlg.mm 
+		${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell-wnd.mm 
+		${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell.cpp 
+		${CMAKE_CURRENT_SOURCE_DIR}/WDL/swell/swell-appstub.mm
+		)
+	
+	set(all_source_files ${reaper_libsndfilewrapper_sources} ${swell_sources})
+	
+ENDIF(NOT WIN32)
+
 ################################################
-# INCLUDES
+# INCLUDE DIRECTORIES
 	
 include_directories (BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/jmde)
 include_directories (BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/WDL)
@@ -35,20 +83,15 @@ find_package(libsndfile REQUIRED)
 
 include_directories (BEFORE ${LIBSNDFILE_INCLUDE_DIR})
 
-set (reaper_libsndfilewrapper_sources
-	${CMAKE_CURRENT_SOURCE_DIR}/reaper_libsndfilewrapper/libsndfileimport.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/reaper_libsndfilewrapper/main.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/reaper_libsndfilewrapper/wrapperclass.cpp	
-	)
 
-		
+
 add_library (reaper_libsndfilewrapper SHARED
-	${reaper_libsndfilewrapper_sources}
+	${all_source_files}
 	)
 
 SET_TARGET_PROPERTIES(reaper_libsndfilewrapper PROPERTIES PREFIX "")
 
-# linking not necessary - library loaded at runtime	
+# linking not necessary - libsndfile library loaded at runtime!
 # target_link_libraries (reaper_libsndfilewrapper libsndfile)
 
 IF(APPLE)

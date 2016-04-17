@@ -8,6 +8,9 @@ sf_count_t	(*ptr_sf_read_double)	(SNDFILE *sndfile, double *ptr, sf_count_t item
 sf_count_t	(*ptr_sf_seek) 		(SNDFILE *sndfile, sf_count_t frames, int whence) ;
 sf_count_t	(*ptr_sf_readf_double)(SNDFILE *sndfile, double *ptr, sf_count_t frames) ;
 const char * (*ptr_sf_version_string)(void);
+int		(*ptr_sf_format_check)	(const SF_INFO *info) ;
+sf_count_t	(*ptr_sf_write_float)	(SNDFILE *sndfile, const float *ptr, sf_count_t items) ;
+sf_count_t	(*ptr_sf_write_double)	(SNDFILE *sndfile, const double *ptr, sf_count_t items) ;
 
 #ifdef _WIN32
 HINSTANCE g_hLibSndFile=0;
@@ -42,6 +45,12 @@ int ImportLibSndFileFunctions()
         if (!ptr_sf_readf_double) errcnt++;
         *((void **)&ptr_sf_version_string)=(void*)GetProcAddress(g_hLibSndFile,"sf_version_string");
         if (!ptr_sf_version_string) errcnt++;
+        *((void **)&ptr_sf_format_check)=(void*)GetProcAddress(g_hLibSndFile,"sf_format_check");
+        if (!ptr_sf_format_check) errcnt++;
+        *((void **)&ptr_sf_write_float)=(void*)GetProcAddress(g_hLibSndFile,"sf_write_float");
+        if (!ptr_sf_write_float) errcnt++;
+        *((void **)&ptr_sf_write_double)=(void*)GetProcAddress(g_hLibSndFile,"sf_write_double");
+        if (!ptr_sf_write_double) errcnt++;
         //OutputDebugStringA("libsndfile functions loaded!");
     } //else OutputDebugStringA("libsndfile DLL not loaded!");
     
@@ -101,6 +110,9 @@ int ImportLibSndFileFunctions()
             *(void **)(&ptr_sf_readf_double) = dlsym(dll, "sf_readf_double");
             *(void **)(&ptr_sf_seek) = dlsym(dll, "sf_seek");
             *(void **)(&ptr_sf_version_string) = dlsym(dll, "sf_version_string");
+            *(void **)(&ptr_sf_format_check) = dlsym(dll, "sf_format_check");
+            *(void **)(&ptr_sf_write_float) = dlsym(dll, "sf_write_float");
+            *(void **)(&ptr_sf_write_double) = dlsym(dll, "sf_write_double");
         }
         if (!dll)
 			errcnt++;
