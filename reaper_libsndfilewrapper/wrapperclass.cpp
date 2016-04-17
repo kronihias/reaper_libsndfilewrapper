@@ -78,7 +78,8 @@ void LSFW_SimpleMediaDecoder::Open(const char *filename, int diskreadmode, int d
         //TODO : this based on libsndfile's format, it should not actually matter to Reaper
         //for playback purposes what this is. However, to update the disk bandwidth counters, it would be nice
         //to have this correctly initialized
-        m_bps=0;
+        
+        m_bps=16;
         int foo=m_sfinfo.format & 0x0000FFFF;
         if (foo==SF_FORMAT_PCM_16)
             m_bps=16;
@@ -88,6 +89,9 @@ void LSFW_SimpleMediaDecoder::Open(const char *filename, int diskreadmode, int d
             m_bps=32;
         else if (foo==SF_FORMAT_PCM_S8 || foo==SF_FORMAT_PCM_U8)
             m_bps=8;
+        else if (foo==SF_FORMAT_DOUBLE)
+            m_bps=64;
+        
         m_nch=m_sfinfo.channels;
         m_srate=m_sfinfo.samplerate;
     }
@@ -113,23 +117,27 @@ void LSFW_SimpleMediaDecoder::GetInfoString(char *buf, int buflen, char *title, 
     strncpy(title,"libsndfile supported File Properties",titlelen);
     if (IsOpen())
     {
-        // todo: add any decoder specific info
         char temp[4096],lengthbuf[128];
         format_timestr((double) m_length / (double)m_srate,lengthbuf,sizeof(lengthbuf));
-        SF_FORMAT_INFO fi;
-        //fi.name=new char[512];
-        fi.format=m_sfinfo.format & SF_FORMAT_TYPEMASK;
-        ptr_sf_command(0,SFC_GET_FORMAT_INFO,&fi,sizeof(fi));
-        //ShowConsoleMsg(fi.name);
-        fi.format=m_sfinfo.format & SF_FORMAT_SUBMASK;
-        ptr_sf_command(0,SFC_GET_FORMAT_INFO,&fi,sizeof(fi));
-        //ShowConsoleMsg(fi.name);
+        
+        SF_FORMAT_INFO fi_major;
+        fi_major.format=m_sfinfo.format & SF_FORMAT_TYPEMASK;
+        ptr_sf_command(0,SFC_GET_FORMAT_INFO,&fi_major,sizeof(fi_major));
+        
+        
+        SF_FORMAT_INFO fi_subformat;
+        fi_subformat.format=m_sfinfo.format & SF_FORMAT_SUBMASK;
+        ptr_sf_command(0,SFC_GET_FORMAT_INFO,&fi_subformat,sizeof(fi_subformat));
+        
+        
         sprintf(temp,"Length: %s:\r\n"
                 "Samplerate: %.0f\r\n"
                 "Channels: %d\r\n"
                 "Bits/sample: %d\r\n"
-                "libsndfile version: %s",
-                lengthbuf,m_srate,m_nch,m_bps,ptr_sf_version_string());
+                "Format: %s\r\n"
+                "Encoding: %s\r\n"
+                "libsndfile version: %s\r\n",
+                lengthbuf,m_srate,m_nch,m_bps,fi_major.name,fi_subformat.name,ptr_sf_version_string());
 
         // lstrcpyn(buf,temp,buflen);
         strncpy(buf,temp,buflen);

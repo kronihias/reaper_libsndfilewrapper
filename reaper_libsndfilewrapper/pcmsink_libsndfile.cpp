@@ -22,7 +22,6 @@
 
 #define SINK_FOURCC REAPER_FOURCC('s','n','d','f')
 
-// #define IDD_RAWSINK_CFG                 155
 
 // set the default format and quality...
 int SF_DEFAULT_FORMAT = SF_FORMAT_PAF | SF_FORMAT_PCM_24;
