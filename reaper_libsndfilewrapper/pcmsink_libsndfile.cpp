@@ -83,7 +83,7 @@ class PCM_sink_libsndfile : public PCM_sink
         
         sfinfo.samplerate	= m_srate ;
         sfinfo.channels		= m_nch;
-        sfinfo.format		= m_format; //(SF_FORMAT_WAV | SF_FORMAT_PCM_24) ;
+        sfinfo.format		= m_format;
         
         // printf("Chose format: 0x%08x \n", m_format);
         
@@ -734,7 +734,7 @@ static PCM_sink *CreateSink(const char *filename, void *cfg, int cfg_l, int nch,
 pcmsink_register_t mySinkRegStruct={GetFmt,GetExtension,ShowConfig,CreateSink};
 
 
-// import the resources. Note: if you do not have these files, run "php ../mac_resgen.php sample_project.rc" from this directory
+// import the resources. Note: if you do not have these files, run "php ../WDL/swell/mac_resgen.php res.rc" from this directory
 #ifndef _WIN32 // MAC resources
 #include "swell/swell-dlggen.h"
 #include "res.rc_mac_dlg"
