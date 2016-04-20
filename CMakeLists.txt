@@ -69,6 +69,9 @@ IF(NOT WIN32)
 	
 ENDIF(NOT WIN32)
 
+# set unique name for swell functions
+ADD_DEFINITIONS(-DSWELL_APP_PREFIX=SWELL_LIBSNDFILEWRAPPER)
+
 ################################################
 # INCLUDE DIRECTORIES
 	
@@ -96,4 +99,20 @@ SET_TARGET_PROPERTIES(reaper_libsndfilewrapper PROPERTIES PREFIX "")
 
 IF(APPLE)
 	target_link_libraries (reaper_libsndfilewrapper ${CARBON_LIBRARY} ${COCOA_LIBRARY})
+ENDIF(APPLE)
+
+
+##############################################
+## INSTALLERS
+
+
+# DragNDrop for APPLE
+
+IF(APPLE)
+	
+	SET (CPACK_DMG_VOLUME_NAME reaper_libsndfilewrapper)
+	SET (CPACK_DMG_FORMAT UDRO)
+	
+	include(CPack)
+	
 ENDIF(APPLE)
