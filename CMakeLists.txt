@@ -11,11 +11,6 @@ IF(APPLE)
    # SET( CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL "-dead_strip" )
    # SET( CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL "-dead_strip" )
    # SET( CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "-dead_strip" )
-	ADD_DEFINITIONS(
-		-std=c++98
-		-stdlib=libstdc++
-		-Wno-c++11-extensions #avoid c++11 warning msg
-	)
 	
 	FIND_LIBRARY(CARBON_LIBRARY Carbon)
 	FIND_LIBRARY(COCOA_LIBRARY Cocoa)
