@@ -211,8 +211,23 @@ class PCM_sink_libsndfile : public PCM_sink
       
     }
 
-    int Extended(int call, void *parm1, void *parm2, void *parm3) 
+    virtual int Extended(int call, void *parm1, void *parm2, void *parm3) override
     {
+      printf("Extended called with:  0x%08x\n", call);
+
+	  /* use this to retrieve cues (markers) !*/
+      /* this does not work, probably not implemented */
+    
+      if (call == PCM_SINK_EXT_ADDCUE)
+      {
+        // parm1=(REAPER_cue*)cue
+        REAPER_cue* cue = (REAPER_cue*)parm1;
+      
+        printf("cue %d: start: %f end: %f isregion: %d name: %s\n", cue->m_id, cue->m_time, cue->m_endtime, cue->m_isregion, cue->m_name);
+      
+        return 1;
+      }
+    
       return 0;
     }
 
@@ -241,7 +256,7 @@ class PCM_sink_libsndfile : public PCM_sink
     REAPER_PeakBuild_Interface *m_peakbuild;
 };
 
-static unsigned int GetFmt(char **desc) 
+static unsigned int GetFmt(const char **desc)
 {
   if (desc) *desc="libsndfile (.au .avr .caf .htk .iff .mat .mpc .paf .pcm .pvf .sd2 ...)";
   return SINK_FOURCC;

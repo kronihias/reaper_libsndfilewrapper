@@ -69,8 +69,7 @@ ADD_DEFINITIONS(-DSWELL_APP_PREFIX=SWELL_LIBSNDFILEWRAPPER)
 
 ################################################
 # INCLUDE DIRECTORIES
-	
-include_directories (BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/jmde)
+
 include_directories (BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/WDL)
 include_directories (BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/reaper_libsndfilewrapper)
 
@@ -81,8 +80,15 @@ find_package(libsndfile REQUIRED)
 
 include_directories (BEFORE ${LIBSNDFILE_INCLUDE_DIR})
 
+######################################
+# set the target directory - Reaper UserPlugin directory
 
+IF(APPLE)
+  # set the output directory to REAPER Plugin dir
+  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "~/Library/Application Support/REAPER/UserPlugins")
+ENDIF(APPLE)
 
+######################################
 add_library (reaper_libsndfilewrapper SHARED
 	${all_source_files}
 	)

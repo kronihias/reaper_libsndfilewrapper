@@ -71,7 +71,7 @@ PCM_source *CreateFromFile(const char *filename, int priority)
 }
 
 // this is used for UI only, not so muc
-const char *EnumFileExtensions(int i, char **descptr) // call increasing i until returns a string, if descptr's output is NULL, use last description
+const char *EnumFileExtensions(int i, const char **descptr) // call increasing i until returns a string, if descptr's output is NULL, use last description
 {
     if (i == 0)
     {
