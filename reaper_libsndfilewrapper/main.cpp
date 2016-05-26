@@ -96,7 +96,9 @@ const char *EnumFileExtensions(int i, const char **descptr) // call increasing i
 
 
 pcmsrc_register_t myRegStruct={CreateFromType,CreateFromFile,EnumFileExtensions};
-extern pcmsink_register_t mySinkRegStruct; // from pcmsink_libsndfile.cpp
+// extern pcmsink_register_t mySinkRegStruct; // from pcmsink_libsndfile.cpp
+extern pcmsink_register_ext_t mySinkRegStruct; // from pcmsink_libsndfile.cpp
+
 
 const char *(*GetExePath)();
 
@@ -138,7 +140,16 @@ REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(REAPER_PLUGIN_HINSTANCE hI
             return 0;
         }
         rec->Register("pcmsrc",&myRegStruct);
-        rec->Register("pcmsink",&mySinkRegStruct);
+      
+        if (!rec->Register("pcmsink_ext",&mySinkRegStruct))
+        {
+          printf("Failed to register extended Sink\n");
+        
+          if (rec->Register("pcmsink",&mySinkRegStruct))
+            printf("Registered normal Sink!\n");
+        
+        }
+      
         return 1;
     }
     return 0;

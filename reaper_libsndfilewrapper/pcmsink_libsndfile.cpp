@@ -296,6 +296,19 @@ static const char *GetExtension(const void *cfg, int cfg_l)
     return NULL;
 }
 
+/* extended sink */
+static int ExtendedSinkInfo(int call, void* parm1, void* parm2, void* parm3)
+{
+  printf("callback extended called: 0x%.8x\n", call);
+  if (call == PCM_SINK_EXT_ADDCUE)
+  {
+    /* we support cues... */
+    return 1;
+  }
+  
+  return 0;
+}
+
 // config stuff
 
 static int LoadDefaultConfig(void **data, const char *desc)
@@ -745,9 +758,7 @@ static PCM_sink *CreateSink(const char *filename, void *cfg, int cfg_l, int nch,
 }
 
 
-
-pcmsink_register_t mySinkRegStruct={GetFmt,GetExtension,ShowConfig,CreateSink};
-
+pcmsink_register_ext_t mySinkRegStruct={{GetFmt,GetExtension,ShowConfig,CreateSink}, ExtendedSinkInfo};
 
 // import the resources. Note: if you do not have these files, run "php ../WDL/swell/mac_resgen.php res.rc" from this directory
 #ifndef _WIN32 // MAC resources
