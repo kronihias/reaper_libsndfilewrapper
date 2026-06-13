@@ -31,16 +31,39 @@ echo === reaper_libsndfilewrapper v%VERSION% - Windows installer build ===
 
 REM -- parse args
 set SKIP_SIGN=0
+set ARCH=x64
 :parse_args
 if "%~1"=="" goto args_done
-if /I "%~1"=="--no-sign" (set SKIP_SIGN=1) else (
-    echo Unknown option: %~1
-    echo Usage: %~nx0 [--no-sign]
+if /I "%~1"=="--no-sign" (
+    set SKIP_SIGN=1
+    shift
+    goto parse_args
+)
+if /I "%~1"=="--arch" (
+    set "ARCH=%~2"
+    shift
+    shift
+    goto parse_args
+)
+echo Unknown option: %~1
+echo Usage: %~nx0 [--arch x64^|arm64] [--no-sign]
+exit /b 1
+:args_done
+
+REM -- map target arch -> CMake platform, output tag and Inno Setup architecture
+if /I "%ARCH%"=="x64" (
+    set "CMAKE_ARCH=x64"
+    set "ARCH_TAG=win64"
+    set "ISS_ARCH=x64compatible"
+) else if /I "%ARCH%"=="arm64" (
+    set "CMAKE_ARCH=ARM64"
+    set "ARCH_TAG=winarm64"
+    set "ISS_ARCH=arm64"
+) else (
+    echo Error: unknown --arch "%ARCH%" ^(expected x64 or arm64^)
     exit /b 1
 )
-shift
-goto parse_args
-:args_done
+echo === Target architecture: %ARCH% ^(CMake -A %CMAKE_ARCH%, %ARCH_TAG%^) ===
 
 REM -- load credentials env (cmd-style) by re-reading the bash one
 if "%SKIP_SIGN%"=="1" goto skip_load_creds
@@ -71,7 +94,7 @@ REM ============================================================================
 REM Configure + build
 REM ============================================================================
 echo.
-echo === Configuring (default Visual Studio generator, x64) ===
+echo === Configuring (default Visual Studio generator, %CMAKE_ARCH%) ===
 REM No vcpkg / external toolchain needed: libsndfile and WDL are vendored and
 REM statically linked. (We deliberately ignore VCPKG_ROOT.)
 REM
@@ -79,9 +102,10 @@ REM Let CMake pick the newest installed Visual Studio as the default generator
 REM rather than pinning a version: the GitHub runners (and local toolchains)
 REM track the current VS release, so a hard-coded "-G Visual Studio 17 2022"
 REM breaks the moment the runner moves to VS 18+ ("could not find any instance
-REM of Visual Studio"). "-A x64" still selects the 64-bit platform.
+REM of Visual Studio"). "-A" selects the target platform (x64 / ARM64); the
+REM ARM64 build cross-compiles from the x64 host using the VS ARM64 toolset.
 cmake -S "%ROOT%" -B "%BUILD_DIR%" ^
-      -A x64 ^
+      -A %CMAKE_ARCH% ^
       -DCMAKE_BUILD_TYPE=Release ^
       -DREAPER_LIBSNDFILEWRAPPER_INSTALL_USER_PLUGINS=OFF
 if errorlevel 1 exit /b 1
@@ -166,10 +190,12 @@ echo === Compiling installer (Inno Setup) ===
     /DReaperWrapVersion=%VERSION% ^
     /DReaperWrapStageDir=%INSTALL_PARENT% ^
     /DReaperWrapOutputDir=%RELEASE_DIR% ^
+    /DReaperWrapArchTag=%ARCH_TAG% ^
+    /DReaperWrapArchAllowed=%ISS_ARCH% ^
     "%ISS%"
 if errorlevel 1 exit /b 1
 
-set INSTALLER=%RELEASE_DIR%\reaper_libsndfilewrapper_v%VERSION%_win64_setup.exe
+set INSTALLER=%RELEASE_DIR%\reaper_libsndfilewrapper_v%VERSION%_%ARCH_TAG%_setup.exe
 
 REM ============================================================================
 REM Codesign installer itself
