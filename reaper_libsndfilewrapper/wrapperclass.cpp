@@ -1,6 +1,12 @@
 #include "wrapperclass.h"
 //#include "libsndfileImport.h"
 
+// Injected by CMake (see top-level CMakeLists.txt). Fallback keeps non-CMake
+// builds compiling. Mirrors pcmsink_libsndfile.cpp.
+#ifndef REAPER_LIBSNDFILEWRAPPER_VERSION
+#define REAPER_LIBSNDFILEWRAPPER_VERSION "dev"
+#endif
+
 extern int		(*ptr_sf_command)	(SNDFILE *sndfile, int command, void *data, int datasize) ;
 extern SNDFILE* 	(*ptr_sf_open)		(const char *path, int mode, SF_INFO *sfinfo) ;
 extern int		(*ptr_sf_close)		(SNDFILE *sndfile) ;
@@ -136,8 +142,10 @@ void LSFW_SimpleMediaDecoder::GetInfoString(char *buf, int buflen, char *title, 
                 "Bits/sample: %d\r\n"
                 "Format: %s\r\n"
                 "Encoding: %s\r\n"
-                "libsndfile version: %s\r\n",
-                lengthbuf,m_srate,m_nch,m_bps,fi_major.name,fi_subformat.name,ptr_sf_version_string());
+                "libsndfile version: %s\r\n"
+                "reaper_libsndfilewrapper version: %s\r\n",
+                lengthbuf,m_srate,m_nch,m_bps,fi_major.name,fi_subformat.name,
+                ptr_sf_version_string(),REAPER_LIBSNDFILEWRAPPER_VERSION);
 
         // lstrcpyn(buf,temp,buflen);
         strncpy(buf,temp,buflen);
