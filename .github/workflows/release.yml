@@ -13,6 +13,14 @@ on:
 jobs:
   build-windows:
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64       # native x86_64
+            tag: win64
+          - arch: arm64     # cross-compiled from the x64 host (VS ARM64 toolset)
+            tag: winarm64
     env:
       WINDOWS_CODESIGN_PFX: ${{ secrets.WINDOWS_CODESIGN_PFX }}
       WINDOWS_CODESIGN_SUBJECT: ${{ secrets.WINDOWS_CODESIGN_SUBJECT }}
@@ -53,19 +61,19 @@ jobs:
       if: env.WINDOWS_CODESIGN_PFX == ''
       run: |
         cd scripts
-        .\build_win.bat --no-sign
+        .\build_win.bat --arch ${{ matrix.arch }} --no-sign
       shell: cmd
 
     - name: Build Windows installer (signed)
       if: env.WINDOWS_CODESIGN_PFX != ''
       run: |
         cd scripts
-        .\build_win.bat
+        .\build_win.bat --arch ${{ matrix.arch }}
       shell: cmd
 
     - name: Check Windows installer
       run: |
-        if not exist ".\_WIN_RELEASE\reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_win64_setup.exe" (
+        if not exist ".\_WIN_RELEASE\reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_${{ matrix.tag }}_setup.exe" (
           echo Windows installer not found
           exit /b 1
         )
@@ -75,12 +83,12 @@ jobs:
       if: github.event_name == 'workflow_dispatch'
       uses: actions/upload-artifact@v4
       with:
-        name: windows-installer
-        path: ./_WIN_RELEASE/reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_win64_setup.exe
+        name: windows-installer-${{ matrix.tag }}
+        path: ./_WIN_RELEASE/reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_${{ matrix.tag }}_setup.exe
 
     - name: Upload Windows installer
       if: github.event_name == 'release'
-      run: gh release upload ${{ github.event.inputs.tag_name || github.event.release.tag_name }} ./_WIN_RELEASE/reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_win64_setup.exe
+      run: gh release upload ${{ github.event.inputs.tag_name || github.event.release.tag_name }} ./_WIN_RELEASE/reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_${{ matrix.tag }}_setup.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -168,7 +176,15 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-linux:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest       # x86_64
+            arch: x86_64
+          - runner: ubuntu-24.04-arm    # native aarch64 runner
+            arch: aarch64
+    runs-on: ${{ matrix.runner }}
 
     steps:
     - name: Checkout code
@@ -192,7 +208,7 @@ jobs:
 
     - name: Check Linux tarball
       run: |
-        if [ ! -f "./_LINUX_RELEASE/reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_linux_x86_64.tar.gz" ]; then
+        if [ ! -f "./_LINUX_RELEASE/reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_linux_${{ matrix.arch }}.tar.gz" ]; then
           echo "Linux tarball not found"
           exit 1
         fi
@@ -201,11 +217,11 @@ jobs:
       if: github.event_name == 'workflow_dispatch'
       uses: actions/upload-artifact@v4
       with:
-        name: linux-tarball
-        path: ./_LINUX_RELEASE/reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_linux_x86_64.tar.gz
+        name: linux-tarball-${{ matrix.arch }}
+        path: ./_LINUX_RELEASE/reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_linux_${{ matrix.arch }}.tar.gz
 
     - name: Upload Linux tarball
       if: github.event_name == 'release'
-      run: gh release upload ${{ github.event.inputs.tag_name || github.event.release.tag_name }} ./_LINUX_RELEASE/reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_linux_x86_64.tar.gz
+      run: gh release upload ${{ github.event.inputs.tag_name || github.event.release.tag_name }} ./_LINUX_RELEASE/reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_linux_${{ matrix.arch }}.tar.gz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

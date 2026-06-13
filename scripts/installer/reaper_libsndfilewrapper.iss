@@ -5,6 +5,8 @@
 ;     /DReaperWrapVersion=X.Y.Z
 ;     /DReaperWrapStageDir=path\to\staged\plugin\folder
 ;     /DReaperWrapOutputDir=path\to\put\setup.exe
+;     /DReaperWrapArchTag=win64|winarm64           (output filename suffix)
+;     /DReaperWrapArchAllowed=x64compatible|arm64  (Inno Setup architecture)
 ;  so this file does not need to be edited per-release.
 ; ============================================================================
 
@@ -16,6 +18,13 @@
 #endif
 #ifndef ReaperWrapOutputDir
   #error You must invoke ISCC with /DReaperWrapOutputDir=...
+#endif
+; Architecture knobs default to x64 so a bare ISCC invocation still works.
+#ifndef ReaperWrapArchTag
+  #define ReaperWrapArchTag "win64"
+#endif
+#ifndef ReaperWrapArchAllowed
+  #define ReaperWrapArchAllowed "x64compatible"
 #endif
 
 [Setup]
@@ -32,11 +41,11 @@ DisableDirPage=yes
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir={#ReaperWrapOutputDir}
-OutputBaseFilename=reaper_libsndfilewrapper_v{#ReaperWrapVersion}_win64_setup
+OutputBaseFilename=reaper_libsndfilewrapper_v{#ReaperWrapVersion}_{#ReaperWrapArchTag}_setup
 Compression=lzma2
 SolidCompression=yes
-ArchitecturesAllowed=x64compatible
-ArchitecturesInstallIn64BitMode=x64compatible
+ArchitecturesAllowed={#ReaperWrapArchAllowed}
+ArchitecturesInstallIn64BitMode={#ReaperWrapArchAllowed}
 WizardStyle=modern
 UninstallDisplayName=reaper_libsndfilewrapper {#ReaperWrapVersion}
 LicenseFile={#SourcePath}\..\..\COPYING
