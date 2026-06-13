@@ -22,6 +22,12 @@
 
 #define SINK_FOURCC REAPER_FOURCC('s','n','d','f')
 
+// Injected by CMake (see top-level CMakeLists.txt). Fallback keeps non-CMake
+// builds compiling.
+#ifndef REAPER_LIBSNDFILEWRAPPER_VERSION
+#define REAPER_LIBSNDFILEWRAPPER_VERSION "dev"
+#endif
+
 
 // set the default format and quality...
 int SF_DEFAULT_FORMAT = SF_FORMAT_PAF | SF_FORMAT_PCM_24;
@@ -601,15 +607,19 @@ WDL_DLGRET wavecfgDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
               // printf("Got parameters: format: 0x%08x, vbrq: %f\n", format, vbrq);
           }
           
-          /* Set Range for slider and value for slider and vbr text*/
-          SendDlgItemMessage(hwndDlg, IDC_VBR_SLIDER, TBM_SETRANGE, false, MAKELONG(0, 100));
-          SendDlgItemMessage(hwndDlg, IDC_VBR_SLIDER, TBM_SETPOS, true, (int)(vbrq*100.f));
-          
-          char q_text[5];
-          sprintf(q_text, "%.2f", vbrq);
-          SetDlgItemText(hwndDlg, IDC_VBR_VAL, q_text);
-          
-          
+          /* Show the plugin + libsndfile versions (where the now-removed
+             VBR/Flac quality slider used to be). The quality value only ever
+             affected FLAC/Vorbis/Opus, which are compiled out of the vendored
+             libsndfile (ENABLE_EXTERNAL_LIBS=OFF), so the slider was inert. */
+          (void)vbrq;
+          char ver_text[128];
+          snprintf(ver_text, sizeof(ver_text),
+                   "reaper_libsndfilewrapper v%s", REAPER_LIBSNDFILEWRAPPER_VERSION);
+          SetDlgItemText(hwndDlg, IDC_VERSION, ver_text);
+          SetDlgItemText(hwndDlg, IDC_SF_VERSION,
+                         ptr_sf_version_string ? ptr_sf_version_string() : "libsndfile");
+
+
           /* fill the format combobox */
           SF_FORMAT_INFO	info ;
           
@@ -671,26 +681,6 @@ WDL_DLGRET wavecfgDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
               break;
           }
           
-      // this gets called when slider is moved..
-      case WM_HSCROLL:
-      {
-          
-          int pos = SendDlgItemMessage(hwndDlg, IDC_VBR_SLIDER, TBM_GETPOS, 0, 0);
-          
-          float val = (float)pos/100.f;
-          char q_text[5];
-          // wsprintf(q_text, "%.2f", (float)pos/100.f);
-          
-          sprintf(q_text, "%.2f", val);
-          
-          SetDlgItemText(hwndDlg, IDC_VBR_VAL, q_text);
-          
-          // printf("Slider moved, pos: %.2f!!\n", val);
-          
-          
-          break;
-      }
-      
     // this gets called to retrieve the settings!
     case WM_USER+1024:
       {
@@ -701,14 +691,13 @@ WDL_DLGRET wavecfgDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
               // get the format selection
               int id = SendDlgItemMessage(hwndDlg, IDC_BYTEORDER, CB_GETCURSEL, 0, 0);
               int format = SendDlgItemMessage(hwndDlg, IDC_BYTEORDER, CB_GETITEMDATA, id, 0);
-              
-              // get the vbr quality
-              int pos = SendDlgItemMessage(hwndDlg, IDC_VBR_SLIDER, TBM_GETPOS, 0, 0);
-              
-              
+
+
               ((int *)lParam)[0] = SINK_FOURCC;
               ((int *)(((unsigned char *)lParam)+4))[0]=REAPER_MAKELEINT(format);
-              ((float *)(((unsigned char *)lParam)+4))[1]=(float)pos/100.f;
+              // The quality slider was removed (inert without FLAC/Vorbis/Opus);
+              // keep the config blob layout by storing the default quality.
+              ((float *)(((unsigned char *)lParam)+4))[1]=SF_DEFAULT_VBR;
               
           }
           

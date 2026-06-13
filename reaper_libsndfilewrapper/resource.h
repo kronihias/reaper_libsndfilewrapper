@@ -30,6 +30,8 @@
 #define IDC_FORMAT_TEXT                 1014
 #define IDC_VBR_VAL                     1015
 #define IDC_VBR_SLIDER                  1016
+#define IDC_VERSION                     1017
+#define IDC_SF_VERSION                  1018
 #define IDC_EDIT3                       1019
 #define IDC_NAME                        1037
 #define IDC_INFO                        1038
