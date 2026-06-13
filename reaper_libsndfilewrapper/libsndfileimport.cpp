@@ -1,5 +1,12 @@
 #include "libsndfileImport.h"
 
+// libsndfile is now vendored as a git submodule and statically linked into the
+// plugin (see top-level CMakeLists.txt). Historically these symbols were
+// resolved at runtime with dlopen()/LoadLibrary() against a system-installed
+// libsndfile, which silently failed if none was present. Now they simply point
+// at the statically-linked sf_* functions. The ptr_sf_* indirection is kept so
+// the rest of the code (pcmsink/wrapperclass) needs no changes.
+
 int		(*ptr_sf_command)	(SNDFILE *sndfile, int command, void *data, int datasize) ;
 SNDFILE* 	(*ptr_sf_open)		(const char *path, int mode, SF_INFO *sfinfo) ;
 int		(*ptr_sf_close)		(SNDFILE *sndfile) ;
@@ -12,111 +19,22 @@ int		(*ptr_sf_format_check)	(const SF_INFO *info) ;
 sf_count_t	(*ptr_sf_write_float)	(SNDFILE *sndfile, const float *ptr, sf_count_t items) ;
 sf_count_t	(*ptr_sf_write_double)	(SNDFILE *sndfile, const double *ptr, sf_count_t items) ;
 
-#ifdef _WIN32
-HINSTANCE g_hLibSndFile=0;
-#endif
-
 int ImportLibSndFileFunctions()
 {
-    int errcnt=0;
-    
-#ifdef _WIN32
-    if (g_hLibSndFile)
-        return 0;
-    g_hLibSndFile=LoadLibraryA("libsndfile-1.dll");
+    // Bind the indirection pointers to the statically-linked libsndfile
+    // symbols. This cannot fail, but we keep the int return so main.cpp's
+    // existing guard (`if (ImportLibSndFileFunctions()) return 0;`) is happy.
+    ptr_sf_command        = sf_command;
+    ptr_sf_open           = sf_open;
+    ptr_sf_close          = sf_close;
+    ptr_sf_read_float     = sf_read_float;
+    ptr_sf_read_double    = sf_read_double;
+    ptr_sf_seek           = sf_seek;
+    ptr_sf_readf_double   = sf_readf_double;
+    ptr_sf_version_string = sf_version_string;
+    ptr_sf_format_check   = sf_format_check;
+    ptr_sf_write_float    = sf_write_float;
+    ptr_sf_write_double   = sf_write_double;
 
-    if (!g_hLibSndFile)
-        errcnt++;
-    if (g_hLibSndFile)
-    {
-        //OutputDebugStringA("libsndfile dll loaded! now loading functions...");
-        *((void **)&ptr_sf_command)=(void*)GetProcAddress(g_hLibSndFile,"sf_command");
-        if (!ptr_sf_command) errcnt++;
-        *((void **)&ptr_sf_open)=(void*)GetProcAddress(g_hLibSndFile,"sf_open");
-        if (!ptr_sf_open) errcnt++;
-        *((void **)&ptr_sf_close)=(void*)GetProcAddress(g_hLibSndFile,"sf_close");
-        if (!ptr_sf_close) errcnt++;
-        *((void **)&ptr_sf_read_float)=(void*)GetProcAddress(g_hLibSndFile,"sf_read_float");
-        *((void **)&ptr_sf_read_double)=(void*)GetProcAddress(g_hLibSndFile,"sf_read_double");
-        if (!ptr_sf_read_double) errcnt++;
-        *((void **)&ptr_sf_seek)=(void*)GetProcAddress(g_hLibSndFile,"sf_seek");
-        if (!ptr_sf_seek) errcnt++;
-        *((void **)&ptr_sf_readf_double)=(void*)GetProcAddress(g_hLibSndFile,"sf_readf_double");
-        if (!ptr_sf_readf_double) errcnt++;
-        *((void **)&ptr_sf_version_string)=(void*)GetProcAddress(g_hLibSndFile,"sf_version_string");
-        if (!ptr_sf_version_string) errcnt++;
-        *((void **)&ptr_sf_format_check)=(void*)GetProcAddress(g_hLibSndFile,"sf_format_check");
-        if (!ptr_sf_format_check) errcnt++;
-        *((void **)&ptr_sf_write_float)=(void*)GetProcAddress(g_hLibSndFile,"sf_write_float");
-        if (!ptr_sf_write_float) errcnt++;
-        *((void **)&ptr_sf_write_double)=(void*)GetProcAddress(g_hLibSndFile,"sf_write_double");
-        if (!ptr_sf_write_double) errcnt++;
-        //OutputDebugStringA("libsndfile functions loaded!");
-    } //else OutputDebugStringA("libsndfile DLL not loaded!");
-    
-#elif defined(__APPLE__)
-    static int a;
-    static void *dll;
-    if (!dll&&!a)
-    {
-        a=1;
-        if (!dll) dll=dlopen("libsndfile.1.dylib",RTLD_LAZY);
-        if (!dll) dll=dlopen("/usr/local/lib/libsndfile.1.dylib",RTLD_LAZY);
-        if (!dll) dll=dlopen("/usr/lib/libsndfile.1.dylib",RTLD_LAZY);
-        
-        if (!dll)
-        {
-            CFBundleRef bund=CFBundleGetMainBundle();
-            if (bund)
-            {
-                CFURLRef url=CFBundleCopyBundleURL(bund);
-                if (url)
-                {
-                    char buf[8192];
-                    if (CFURLGetFileSystemRepresentation(url,true,(UInt8*)buf,sizeof(buf)-128))
-                    {
-                        char *p=buf;
-                        while (*p) p++;
-                        while (p>=buf && *p != '/') p--;
-                        if (p>=buf)
-                        {
-                            strcat(buf,"/Contents/Plugins/libsndfile.1.dylib");
-                            if (!dll) dll=dlopen(buf,RTLD_LAZY);
-                            
-                            if (!dll)
-                            {
-                                strcpy(p,"/libsndfile.1.dylib");
-                                dll=dlopen(buf,RTLD_LAZY);
-                            }
-                            if (!dll)
-                            {
-                                strcpy(p,"/Plugins/libsndfile.1.dylib");
-                                if (!dll) dll=dlopen(buf,RTLD_LAZY);
-                            }
-                        }          
-                    }
-                    CFRelease(url);
-                }
-            }
-        }
-        
-        if (dll)
-        {
-            *(void **)(&ptr_sf_command) = dlsym(dll, "sf_command");
-            *(void **)(&ptr_sf_open) = dlsym(dll, "sf_open");
-            *(void **)(&ptr_sf_close) = dlsym(dll, "sf_close");
-            *(void **)(&ptr_sf_read_float) = dlsym(dll, "sf_read_float");
-            *(void **)(&ptr_sf_read_double) = dlsym(dll, "sf_read_double");
-            *(void **)(&ptr_sf_readf_double) = dlsym(dll, "sf_readf_double");
-            *(void **)(&ptr_sf_seek) = dlsym(dll, "sf_seek");
-            *(void **)(&ptr_sf_version_string) = dlsym(dll, "sf_version_string");
-            *(void **)(&ptr_sf_format_check) = dlsym(dll, "sf_format_check");
-            *(void **)(&ptr_sf_write_float) = dlsym(dll, "sf_write_float");
-            *(void **)(&ptr_sf_write_double) = dlsym(dll, "sf_write_double");
-        }
-        if (!dll)
-			errcnt++;
-    }
-#endif
-    return errcnt;
+    return 0;
 }

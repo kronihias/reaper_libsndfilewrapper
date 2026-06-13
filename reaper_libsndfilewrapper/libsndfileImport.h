@@ -3,18 +3,13 @@
 
 #include "sndfile.h"
 
-#ifdef _WIN32
-    #include <windows.h>
-#endif
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 
-#ifdef __APPLE__
-#include <Carbon/Carbon.h>
-#include <dlfcn.h>
-#endif
-
+// Binds the ptr_sf_* indirection pointers to the statically-linked libsndfile
+// symbols. Always returns 0 (kept as int for backwards compatibility with the
+// historical runtime-loading version that could fail). See libsndfileimport.cpp.
 int ImportLibSndFileFunctions();
 
 #endif // LIBSNDFILEIMPORT_H
