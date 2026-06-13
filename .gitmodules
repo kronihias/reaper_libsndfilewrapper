@@ -1,0 +1,6 @@
+[submodule "WDL"]
+	path = WDL
+	url = https://github.com/justinfrankel/WDL.git
+[submodule "libsndfile"]
+	path = libsndfile
+	url = https://github.com/libsndfile/libsndfile.git

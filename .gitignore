@@ -1,0 +1,21 @@
+# Build trees
+/build/
+/build-dev/
+/_build/
+/_build_win/
+/_LINUX_RELEASE/
+/_OSX_RELEASE/
+/_WIN_RELEASE/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.xcodeproj/
+*.xcworkspace/
+CMakeUserPresets.json
+
+# Signing credentials should not be committed.
+scripts/codesign.env

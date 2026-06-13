@@ -763,6 +763,13 @@ pcmsink_register_ext_t mySinkRegStruct={{GetFmt,GetExtension,ShowConfig,CreateSi
 // import the resources. Note: if you do not have these files, run "php ../WDL/swell/mac_resgen.php res.rc" from this directory
 #ifndef _WIN32 // MAC resources
 #include "swell/swell-dlggen.h"
+// The generic (Linux) SWELL only defines SWELL_DLG_WS_DEFAULT_SCALING under
+// SWELL_TARGET_OSX, yet the deprecated SWELL_DEFINE_DIALOG_RESOURCE_BEGIN macro
+// (emitted by the committed res.rc_mac_dlg) references it. Define it to 0 (a
+// no-op flag bit) so the dialog resources compile on non-macOS SWELL.
+#ifndef SWELL_DLG_WS_DEFAULT_SCALING
+#define SWELL_DLG_WS_DEFAULT_SCALING 0
+#endif
 #include "res.rc_mac_dlg"
 #undef BEGIN
 #undef END
