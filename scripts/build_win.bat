@@ -71,11 +71,17 @@ REM ============================================================================
 REM Configure + build
 REM ============================================================================
 echo.
-echo === Configuring (Visual Studio 2022 x64) ===
+echo === Configuring (default Visual Studio generator, x64) ===
 REM No vcpkg / external toolchain needed: libsndfile and WDL are vendored and
 REM statically linked. (We deliberately ignore VCPKG_ROOT.)
+REM
+REM Let CMake pick the newest installed Visual Studio as the default generator
+REM rather than pinning a version: the GitHub runners (and local toolchains)
+REM track the current VS release, so a hard-coded "-G Visual Studio 17 2022"
+REM breaks the moment the runner moves to VS 18+ ("could not find any instance
+REM of Visual Studio"). "-A x64" still selects the 64-bit platform.
 cmake -S "%ROOT%" -B "%BUILD_DIR%" ^
-      -G "Visual Studio 17 2022" -A x64 ^
+      -A x64 ^
       -DCMAKE_BUILD_TYPE=Release ^
       -DREAPER_LIBSNDFILEWRAPPER_INSTALL_USER_PLUGINS=OFF
 if errorlevel 1 exit /b 1
