@@ -68,7 +68,11 @@ set(BUILD_SHARED_LIBS         OFF CACHE BOOL "" FORCE)
 set(ENABLE_CPACK              OFF CACHE BOOL "" FORCE)
 set(ENABLE_PACKAGE_CONFIG     OFF CACHE BOOL "" FORCE)
 set(INSTALL_PKGCONFIG_MODULE  OFF CACHE BOOL "" FORCE)
-set(ENABLE_STATIC_RUNTIME     ON  CACHE BOOL "" FORCE)
+# NOTE: do NOT also set libsndfile's legacy ENABLE_STATIC_RUNTIME here. The
+# static MSVC runtime is already selected via CMAKE_MSVC_RUNTIME_LIBRARY +
+# CMP0091 above, which propagates into the libsndfile sub-build. libsndfile
+# 1.2.2 aborts configuration if both knobs are set ("Both ENABLE_STATIC_RUNTIME
+# and CMAKE_MSVC_RUNTIME_LIBRARY are set.").
 add_subdirectory(libsndfile)
 
 ################################################
