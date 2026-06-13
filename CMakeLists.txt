@@ -15,7 +15,14 @@ option(REAPER_LIBSNDFILEWRAPPER_INSTALL_USER_PLUGINS
        "Copy the built plugin into the user's REAPER UserPlugins folder"
        ON)
 
-SET(CMAKE_BUILD_TYPE MinSizeRel)
+# Default to an optimized Release build (this also propagates into the vendored
+# libsndfile sub-build). Release = -O2/-O3 -DNDEBUG on GCC/Clang and /O2 on
+# MSVC. The build scripts pass -DCMAKE_BUILD_TYPE=Release explicitly; honor any
+# caller-provided type, and skip this for multi-config generators (Visual
+# Studio/Xcode) which pick the config at build time via --config.
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
 
 # Statically link the MSVC runtime so the plugin does not depend on the VC++
 # redistributable. CMP0091 (CMake >= 3.15) lets us select the runtime via an
