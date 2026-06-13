@@ -137,6 +137,11 @@ SET_TARGET_PROPERTIES(reaper_libsndfilewrapper PROPERTIES PREFIX "")
 # vendored libsndfile (static) - provides sf_* and propagates sndfile.h include
 target_link_libraries (reaper_libsndfilewrapper sndfile)
 
+# Expose the project version to the C++ sources so the export/render config
+# panel can display "reaper_libsndfilewrapper vX.Y.Z".
+target_compile_definitions (reaper_libsndfilewrapper PRIVATE
+	REAPER_LIBSNDFILEWRAPPER_VERSION="${REAPER_LIBSNDFILEWRAPPER_VERSION}")
+
 IF(APPLE)
 	target_link_libraries (reaper_libsndfilewrapper ${CARBON_LIBRARY} ${COCOA_LIBRARY})
 ENDIF(APPLE)
