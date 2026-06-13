@@ -86,6 +86,20 @@ jobs:
 
   build-macos:
     runs-on: macos-latest
+    # Job-level env so the codesigning secrets are visible to every step's
+    # `if:` condition. (A variable defined only in a step's own `env:` block is
+    # NOT available to that same step's `if:`, which previously caused the
+    # cert-import step to be skipped while the build step still tried to sign,
+    # failing with "codesign: no identity found".)
+    env:
+      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      CODESIGN_CERTIFICATE_P12: ${{ secrets.CODESIGN_CERTIFICATE_P12 }}
+      CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.CODESIGN_CERTIFICATE_PASSWORD }}
+      CODESIGN_APP: ${{ secrets.CODESIGN_APP }}
+      CODESIGN_INSTALLER: ${{ secrets.CODESIGN_INSTALLER }}
+      NOTARIZE_APPLE_ID: ${{ secrets.NOTARIZE_APPLE_ID }}
+      NOTARIZE_PASSWORD: ${{ secrets.NOTARIZE_PASSWORD }}
+      NOTARIZE_TEAM_ID: ${{ secrets.NOTARIZE_TEAM_ID }}
 
     steps:
     - name: Checkout code
@@ -123,15 +137,6 @@ jobs:
         NOTARIZE_PASSWORD="$NOTARIZE_PASSWORD"
         NOTARIZE_TEAM_ID="$NOTARIZE_TEAM_ID"
         EOF
-      env:
-        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        CODESIGN_CERTIFICATE_P12: ${{ secrets.CODESIGN_CERTIFICATE_P12 }}
-        CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.CODESIGN_CERTIFICATE_PASSWORD }}
-        CODESIGN_APP: ${{ secrets.CODESIGN_APP }}
-        CODESIGN_INSTALLER: ${{ secrets.CODESIGN_INSTALLER }}
-        NOTARIZE_APPLE_ID: ${{ secrets.NOTARIZE_APPLE_ID }}
-        NOTARIZE_PASSWORD: ${{ secrets.NOTARIZE_PASSWORD }}
-        NOTARIZE_TEAM_ID: ${{ secrets.NOTARIZE_TEAM_ID }}
 
     - name: Build macOS installer
       run: |
@@ -141,8 +146,6 @@ jobs:
         else
           ./build_osx.sh --no-sign
         fi
-      env:
-        CODESIGN_CERTIFICATE_P12: ${{ secrets.CODESIGN_CERTIFICATE_P12 }}
 
     - name: Check macOS installer
       run: |
