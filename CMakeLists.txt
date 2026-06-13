@@ -155,3 +155,13 @@ else()
 	# GCC: same family of narrowing conversions in WDL; keep them non-fatal.
 	target_compile_options(reaper_libsndfilewrapper PRIVATE -Wno-narrowing)
 endif()
+
+# WDL hard-asserts at compile time that `char` is signed (wdltypes.h:
+# typedef char wdl_assert_failed_unsigned_char[((char)-1) > 0 ? -1 : 1]).
+# GCC/Clang default `char` to UNSIGNED on ARM/AArch64 (e.g. the Linux aarch64
+# and armv7 runners), which makes that assert a negative-sized array and fails
+# the build. Force signed char on every non-MSVC build; it is a no-op where
+# char is already signed (x86/x86_64, and Apple's arm64 ABI).
+if(NOT MSVC)
+	target_compile_options(reaper_libsndfilewrapper PRIVATE -fsigned-char)
+endif()
