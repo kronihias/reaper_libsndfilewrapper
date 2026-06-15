@@ -172,3 +172,17 @@ endif()
 if(NOT MSVC)
 	target_compile_options(reaper_libsndfilewrapper PRIVATE -fsigned-char)
 endif()
+
+# Statically link libstdc++ and libgcc on Linux so the plugin does not pull in
+# the build host's (often newer) GCC runtime at load time. Without this, a
+# binary built on a current toolchain (e.g. CI's GCC 13) references GLIBCXX
+# symbol versions that are absent on older distros (Debian 12 / MX 23 ship the
+# GCC 12 libstdc++, max GLIBCXX_3.4.30), so REAPER silently fails to dlopen the
+# plugin. This removes the libstdc++ ABI floor entirely; the glibc floor is
+# handled separately by building on the oldest supported CI runner. Apple uses
+# libc++ (no static libstdc++) and MSVC selects its runtime via
+# CMAKE_MSVC_RUNTIME_LIBRARY above, so this is Linux/Unix-GCC only.
+if(NOT APPLE AND NOT MSVC)
+	target_link_options(reaper_libsndfilewrapper PRIVATE
+		-static-libstdc++ -static-libgcc)
+endif()

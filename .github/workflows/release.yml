@@ -180,9 +180,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - runner: ubuntu-latest       # x86_64
+          # Build on the OLDEST supported runner, not ubuntu-latest. The runner's
+          # glibc/libstdc++ sets the minimum the .so requires at load time; build
+          # on 24.04 (glibc 2.39, GCC 13) and REAPER silently fails to dlopen the
+          # plugin on older distros like Debian 12 / MX 23 (glibc 2.36, GCC 12).
+          # 22.04 = glibc 2.35, a floor below every currently supported distro.
+          - runner: ubuntu-22.04        # x86_64
             arch: x86_64
-          - runner: ubuntu-24.04-arm    # native aarch64 runner
+          - runner: ubuntu-22.04-arm    # native aarch64 runner
             arch: aarch64
     runs-on: ${{ matrix.runner }}
 
