@@ -92,6 +92,18 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    # Raw (codesigned) DLL for ReaPack, which installs bare files rather than
+    # running the installer. Asset name carries the arch tag because both
+    # Windows builds produce a file called reaper_libsndfilewrapper.dll.
+    - name: Upload raw extension binary (ReaPack)
+      if: github.event_name == 'release'
+      run: |
+        cp "_build_win/stage/REAPER/UserPlugins/reaper_libsndfilewrapper.dll" "reaper_libsndfilewrapper-${{ matrix.tag }}.dll"
+        gh release upload ${{ github.event.inputs.tag_name || github.event.release.tag_name }} "reaper_libsndfilewrapper-${{ matrix.tag }}.dll" --clobber
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   build-macos:
     runs-on: macos-latest
     # Job-level env so the codesigning secrets are visible to every step's
@@ -175,6 +187,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    # Raw (codesigned) universal dylib for ReaPack. One file covers Apple
+    # Silicon + Intel, so no arch suffix is needed.
+    - name: Upload raw extension binary (ReaPack)
+      if: github.event_name == 'release'
+      run: gh release upload ${{ github.event.inputs.tag_name || github.event.release.tag_name }} "_build/stage/Library/Application Support/REAPER/UserPlugins/reaper_libsndfilewrapper.dylib" --clobber
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   build-linux:
     strategy:
       fail-fast: false
@@ -228,5 +248,16 @@ jobs:
     - name: Upload Linux tarball
       if: github.event_name == 'release'
       run: gh release upload ${{ github.event.inputs.tag_name || github.event.release.tag_name }} ./_LINUX_RELEASE/reaper_libsndfilewrapper_v${{ steps.version.outputs.version }}_linux_${{ matrix.arch }}.tar.gz
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # Raw .so for ReaPack, which installs the bare file rather than extracting
+    # the tarball. Asset name carries the arch since each build produces a file
+    # called reaper_libsndfilewrapper.so.
+    - name: Upload raw extension binary (ReaPack)
+      if: github.event_name == 'release'
+      run: |
+        cp _build/out/reaper_libsndfilewrapper.so reaper_libsndfilewrapper-${{ matrix.arch }}.so
+        gh release upload ${{ github.event.inputs.tag_name || github.event.release.tag_name }} reaper_libsndfilewrapper-${{ matrix.arch }}.so --clobber
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

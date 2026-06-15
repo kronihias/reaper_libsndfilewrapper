@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<index version="1" name="reaper_libsndfilewrapper">
+  <category name="Extensions">
+    <reapack name="reaper_libsndfilewrapper.ext" type="extension" desc="libsndfile wrapper for REAPER (RF64, CAF, W64, AIFF, AU, PAF, SD2, VOC, RAW, AVR, HTK, IFF, MAT, MPC, PVF, SDS, SF, WVE, XI)">
+      <version name="1.0.3" author="Matthias Kronlachner" time="2026-06-15T00:00:00Z">
+        <changelog><![CDATA[- Distribute through ReaPack (raw per-platform binaries on GitHub releases)
+- Build against an older glibc baseline and statically link libstdc++ so the Linux build loads on older distributions (e.g. Debian 12 / MX 23)]]></changelog>
+        <source platform="darwin" file="reaper_libsndfilewrapper.dylib">https://github.com/kronihias/reaper_libsndfilewrapper/releases/download/v1.0.3/reaper_libsndfilewrapper.dylib</source>
+        <source platform="win64" file="reaper_libsndfilewrapper.dll">https://github.com/kronihias/reaper_libsndfilewrapper/releases/download/v1.0.3/reaper_libsndfilewrapper-win64.dll</source>
+        <source platform="windows-arm64ec" file="reaper_libsndfilewrapper.dll">https://github.com/kronihias/reaper_libsndfilewrapper/releases/download/v1.0.3/reaper_libsndfilewrapper-winarm64.dll</source>
+        <source platform="linux64" file="reaper_libsndfilewrapper.so">https://github.com/kronihias/reaper_libsndfilewrapper/releases/download/v1.0.3/reaper_libsndfilewrapper-x86_64.so</source>
+        <source platform="linux-aarch64" file="reaper_libsndfilewrapper.so">https://github.com/kronihias/reaper_libsndfilewrapper/releases/download/v1.0.3/reaper_libsndfilewrapper-aarch64.so</source>
+      </version>
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}}{\colortbl;\red255\green0\blue0;}
+\widowctrl\hyphauto
+
+\b\fs36 reaper_libsndfilewrapper\b0\fs22\par
+\par
+REAPER extension adding import (reading) and export (writing) for the audio formats handled by libsndfile - RF64, CAF, W64, AIFF, AU, PAF, SD2, VOC, RAW, AVR, HTK, IFF, MAT, MPC, PVF, SDS, SF, WVE, XI.\par
+\par
+Restart REAPER after installing or updating.\par
+}]]></description>
+        <link rel="website">https://github.com/kronihias/reaper_libsndfilewrapper</link>
+      </metadata>
+    </reapack>
+  </category>
+</index>

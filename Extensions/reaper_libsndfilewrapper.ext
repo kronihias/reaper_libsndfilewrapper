@@ -1,0 +1,26 @@
+@description libsndfile wrapper for REAPER (RF64, CAF, W64, PAF, AU, AIFF, ...)
+@version 1.0.3
+@author Matthias Kronlachner
+@metapackage
+@provides
+  [darwin]          reaper_libsndfilewrapper.dylib https://github.com/kronihias/reaper_libsndfilewrapper/releases/download/v$version/reaper_libsndfilewrapper.dylib
+  [win64]           reaper_libsndfilewrapper.dll   https://github.com/kronihias/reaper_libsndfilewrapper/releases/download/v$version/reaper_libsndfilewrapper-win64.dll
+  [windows-arm64ec] reaper_libsndfilewrapper.dll   https://github.com/kronihias/reaper_libsndfilewrapper/releases/download/v$version/reaper_libsndfilewrapper-winarm64.dll
+  [linux64]         reaper_libsndfilewrapper.so    https://github.com/kronihias/reaper_libsndfilewrapper/releases/download/v$version/reaper_libsndfilewrapper-x86_64.so
+  [linux-aarch64]   reaper_libsndfilewrapper.so    https://github.com/kronihias/reaper_libsndfilewrapper/releases/download/v$version/reaper_libsndfilewrapper-aarch64.so
+@link https://github.com/kronihias/reaper_libsndfilewrapper
+@about
+  # reaper_libsndfilewrapper
+
+  REAPER extension adding import (reading) and export (writing) for the audio
+  formats handled by libsndfile - RF64, CAF, W64, AIFF, AU, PAF, SD2, VOC, RAW
+  and more.
+
+  Supported file extensions: .au .avr .caf .htk .iff .mat .mpc .paf .pvf .raw
+  .rf64 .sd2 .sds .sf .voc .w64 .wve .xi
+
+  Restart REAPER after installing or updating.
+@changelog
+  - Distribute through ReaPack (raw per-platform binaries on GitHub releases)
+  - Build against an older glibc baseline and statically link libstdc++ so the
+    Linux build loads on older distributions (e.g. Debian 12 / MX 23)

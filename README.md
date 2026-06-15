@@ -2,16 +2,13 @@ reaper_libsndfilewrapper
 ========================
 
 REAPER extension that adds import (reading) and export (writing) for the audio
-formats handled by [libsndfile](http://libsndfile.github.io/libsndfile/) —
-RF64, CAF, W64, AIFF, AU, PAF, SD2, VOC, RAW and more — to the
-[REAPER](https://www.reaper.fm) digital audio workstation.
+formats handled by [libsndfile](http://libsndfile.github.io/libsndfile/) — such
+as **RF64** (e.g. RME DIGICheck, mh acoustics Eigenstudio®), CAF, W64, AIFF and
+many more — to the [REAPER](https://www.reaper.fm) digital audio workstation.
 
-Adds read/write support for soundfiles such as **RF64** (e.g. RME DIGICheck,
-mh acoustics Eigenstudio®), `.caf`, `.w64`, `.paf`, `.sf`, `.raw`, `.au`, ...
-
-Supported file extensions include: `.au`, `.avr`, `.caf`, `.htk`, `.iff`,
-`.mat`, `.mpc`, `.paf`, `.pvf`, `.raw`, `.rf64`, `.sd2`, `.sds`, `.sf`, `.voc`,
-`.w64`, `.wve`, `.xi`
+Supported file extensions: `.au`, `.avr`, `.caf`, `.htk`, `.iff`, `.mat`,
+`.mpc`, `.paf`, `.pvf`, `.raw`, `.rf64`, `.sd2`, `.sds`, `.sf`, `.voc`, `.w64`,
+`.wve`, `.xi`
 
 > libsndfile is built **core-formats-only** (no external codec libraries), so
 > compressed formats that REAPER already handles natively (FLAC, Ogg/Vorbis,
@@ -35,9 +32,41 @@ automatically and published in
 
 Restart REAPER after installing.
 
-To cut a new release: bump the `VERSION` file, commit, and publish a GitHub
-release tagged `vX.Y.Z` (matching `VERSION`). Publishing triggers the build +
-signing workflow. Code-signing setup is documented in
+
+ReaPack
+-------
+
+The extension is also distributed through [ReaPack](https://reapack.com/), which
+installs the bare plugin file directly (no installer). In REAPER choose
+*Extensions → ReaPack → Import repositories…* and paste:
+
+```
+https://github.com/kronihias/reaper_libsndfilewrapper/raw/master/index.xml
+```
+
+Then open *Extensions → ReaPack → Browse packages*, find
+**reaper_libsndfilewrapper** under the *Extensions* category, install, and
+restart REAPER. ReaPack downloads the matching per-platform binary straight from
+the GitHub release assets.
+
+The package index ([index.xml](index.xml)) is generated from
+[Extensions/reaper_libsndfilewrapper.ext](Extensions/reaper_libsndfilewrapper.ext)
+by `scripts/reapack_index.sh` (cfillion's `reapack-index` tool).
+
+
+Cutting a release
+-----------------
+
+1. Bump the `VERSION` file **and** the `@version` in
+   [Extensions/reaper_libsndfilewrapper.ext](Extensions/reaper_libsndfilewrapper.ext)
+   (keep them in sync), update the `@changelog`, and commit.
+2. Run `./scripts/reapack_index.sh` to regenerate `index.xml`, and commit it.
+3. Publish a GitHub release tagged `vX.Y.Z` (matching `VERSION`). Publishing
+   triggers the build + signing workflow, which builds the installers **and**
+   uploads the raw per-platform binaries (`.dll`/`.dylib`/`.so`) that ReaPack
+   pulls from the release assets.
+
+Code-signing setup is documented in
 [.github/CODE_SIGNING.md](.github/CODE_SIGNING.md).
 
 
